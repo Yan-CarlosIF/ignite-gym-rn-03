@@ -771,6 +771,11 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.27.1"
 
+"@expo-google-fonts/roboto@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@expo-google-fonts/roboto/-/roboto-0.4.0.tgz#9e4d0c383f16f41d92d3c7a898c918a8a0ebf160"
+  integrity sha512-nODXt1mOxcTBYXbKbYw48z+SgPoyZMNajOdMEF2wN7vuypsUFKN/6HXYy6EBpR+tyZN406OyGb6xwi8JQsspfA==
+
 "@expo/cli@0.24.21":
   version "0.24.21"
   resolved "https://registry.yarnpkg.com/@expo/cli/-/cli-0.24.21.tgz#16090692059c24d55324060997510cf9e039f9f4"
