@@ -3,30 +3,23 @@ import {
   Roboto_700Bold,
   useFonts,
 } from "@expo-google-fonts/roboto";
-import { StatusBar, Text, View } from "react-native";
+import { StatusBar, Text } from "react-native";
+
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import "@/global.css";
+import { Loading } from "@components/loading";
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Roboto_400Regular, Roboto_700Bold });
 
-  if (!fontsLoaded) {
-    return null;
-  }
-
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#202024",
-      }}
-    >
+    <GluestackUIProvider mode="light">
       <StatusBar
         barStyle="light-content"
         backgroundColor="transparent"
         translucent
       />
-      <Text>Hello World!</Text>
-    </View>
+      {!fontsLoaded ? <Loading /> : <Text>Hello world</Text>}
+    </GluestackUIProvider>
   );
 }
