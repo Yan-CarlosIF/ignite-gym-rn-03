@@ -1,6 +1,8 @@
 import { ExerciseCard } from "@components/ExerciseCard";
 import { Group } from "@components/Group";
 import { HomeHeader } from "@components/HomeHeader";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "@routes/app.routes";
 import { FlatList, Heading, HStack, VStack, Text } from "native-base";
 import { useState } from "react";
 
@@ -14,6 +16,7 @@ const exercises = [
 
 export function Home() {
   const [groupSelected, setGroupSelected] = useState("costas");
+  const { navigate } = useNavigation<AppNavigatorRoutesProps>();
 
   function handleSelectGroup(group: string) {
     if (groupSelected === group) {
@@ -21,6 +24,10 @@ export function Home() {
     } else {
       setGroupSelected(group);
     }
+  }
+
+  function handleOpenExerciseDetails() {
+    navigate("exercise");
   }
 
   return (
@@ -58,7 +65,12 @@ export function Home() {
           data={exercises}
           keyExtractor={(item) => item}
           renderItem={({ item: exercise }) => (
-            <ExerciseCard sets={3} reps={12} name={exercise} />
+            <ExerciseCard
+              onPress={handleOpenExerciseDetails}
+              sets={3}
+              reps={12}
+              name={exercise}
+            />
           )}
           showsVerticalScrollIndicator={false}
           _contentContainerStyle={{ paddingBottom: 20 }}
