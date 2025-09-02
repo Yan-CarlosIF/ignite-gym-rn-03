@@ -26,9 +26,7 @@ export function Home() {
     }
   }
 
-  function handleOpenExerciseDetails() {
-    navigate("exercise");
-  }
+  const handleOpenExerciseDetails = () => navigate("exercise");
 
   return (
     <VStack flex={1}>
@@ -48,6 +46,7 @@ export function Home() {
         _contentContainerStyle={{ px: 8 }}
         my={10}
         maxH={10}
+        minH={10}
       />
 
       <VStack flex={1} px={8}>

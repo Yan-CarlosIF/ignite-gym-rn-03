@@ -8,9 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 export function SignUp() {
   const { goBack } = useNavigation();
 
-  function handleGoToSignIn() {
-    goBack();
-  }
+  const handleGoToSignIn = () => goBack();
 
   return (
     <ScrollView

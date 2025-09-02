@@ -9,9 +9,7 @@ import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 export function SignIn() {
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>();
 
-  function handleNewAccount() {
-    navigate("signUp");
-  }
+  const handleNewAccount = () => navigate("signUp");
 
   return (
     <ScrollView
