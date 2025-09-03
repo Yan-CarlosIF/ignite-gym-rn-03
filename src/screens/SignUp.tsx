@@ -7,7 +7,6 @@ import { useNavigation } from "@react-navigation/native";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
 
 const signUpFormSchema = z
   .object({
@@ -37,10 +36,6 @@ export function SignUp() {
   const { goBack } = useNavigation();
 
   const handleGoToSignIn = () => goBack();
-
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
 
   function handleSignUp(data: SignUpFormData) {
     console.log(data);
@@ -137,7 +132,7 @@ export function SignUp() {
         </Center>
 
         <Button
-          mt={24}
+          mt={12}
           onPress={handleGoToSignIn}
           variant="outline"
           title="Voltar para o login"

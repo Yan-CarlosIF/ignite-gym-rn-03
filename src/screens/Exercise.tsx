@@ -30,7 +30,12 @@ export function Exercise() {
         </TouchableOpacity>
 
         <HStack justifyContent="space-between" mt={4} mb={8}>
-          <Heading color="gray.100" fontSize="lg" flexShrink={1}>
+          <Heading
+            fontFamily="heading"
+            color="gray.100"
+            fontSize="lg"
+            flexShrink={1}
+          >
             Puxada frontal
           </Heading>
 
