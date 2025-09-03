@@ -11,12 +11,56 @@ import {
   VStack,
 } from "native-base";
 import { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Alert, TouchableOpacity } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 const PHOTO_SIZE = 33;
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
+  const [userPhoto, setUserPhoto] = useState(
+    "https://github.com/yan-carlosif.png"
+  );
+
+  async function handleUserPhotoSelect() {
+    setPhotoIsLoading(true);
+
+    try {
+      const photoSelected = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+        aspect: [4, 4],
+        allowsEditing: true,
+      });
+
+      if (photoSelected.canceled) return;
+
+      if (photoSelected.assets[0].uri) {
+        const photoInfo = await FileSystem.getInfoAsync(
+          photoSelected.assets[0].uri
+        );
+
+        const size = photoInfo.exists && photoInfo.size / 1024 / 1024;
+
+        if (size && size > 5) {
+          return Alert.alert(
+            "Foto muito grande",
+            "A foto selecionada ultrapassa o limite de 5MB"
+          );
+        }
+
+        setUserPhoto(photoSelected.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert(
+        "Foto de perfil",
+        "Não foi possivel definir a foto de perfil"
+      );
+    } finally {
+      setPhotoIsLoading(false);
+    }
+  }
 
   return (
     <VStack flex={1}>
@@ -33,13 +77,10 @@ export function Profile() {
               rounded="full"
             />
           ) : (
-            <UserPhoto
-              size={PHOTO_SIZE}
-              source={{ uri: "https://github.com/yan-carlosif.png" }}
-            />
+            <UserPhoto size={PHOTO_SIZE} source={{ uri: userPhoto }} />
           )}
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleUserPhotoSelect}>
             <Text
               mt={2}
               color="green.500"
