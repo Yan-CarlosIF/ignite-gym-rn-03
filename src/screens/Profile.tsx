@@ -8,6 +8,7 @@ import {
   ScrollView,
   Skeleton,
   Text,
+  useToast,
   VStack,
 } from "native-base";
 import { useState } from "react";
@@ -22,6 +23,8 @@ export function Profile() {
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/yan-carlosif.png"
   );
+
+  const toast = useToast();
 
   async function handleUserPhotoSelect() {
     setPhotoIsLoading(true);
@@ -44,10 +47,11 @@ export function Profile() {
         const size = photoInfo.exists && photoInfo.size / 1024 / 1024;
 
         if (size && size > 5) {
-          return Alert.alert(
-            "Foto muito grande",
-            "A foto selecionada ultrapassa o limite de 5MB"
-          );
+          return toast.show({
+            title: "A foto selecionada ultrapassa o limite de 5MB",
+            placement: "top",
+            bgColor: "red.500",
+          });
         }
 
         setUserPhoto(photoSelected.assets[0].uri);
