@@ -1,5 +1,10 @@
 import { api } from "@services/api";
 import {
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+  storageAuthTokenSave,
+} from "@storage/storageAuthToken";
+import {
   storageUserGet,
   storageUserRemove,
   storageUserSave,
@@ -26,17 +31,40 @@ export function AuthContextProvider({
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
   const [isLoading, setIsLoading] = useState(true);
 
+  function userAndTokenUpdate(userData: UserDTO, token: string) {
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    setUser(userData);
+  }
+
+  async function storageUserAndTokenSave(userData: UserDTO, token: string) {
+    try {
+      setIsLoading(true);
+
+      await storageUserSave(userData);
+      await storageAuthTokenSave(token);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function signIn(email: string, password: string) {
     try {
       const { data } = await api.post("/sessions", { email, password });
 
-      if (data.user) {
-        setUser(data.user);
+      if (data.user && data.token) {
+        setIsLoading(true);
 
-        await storageUserSave(data.user);
+        await storageUserAndTokenSave(data.user, data.token);
+
+        userAndTokenUpdate(data.user, data.token);
       }
     } catch (error) {
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -46,6 +74,7 @@ export function AuthContextProvider({
 
       setUser({} as UserDTO);
       await storageUserRemove();
+      await storageAuthTokenRemove();
     } catch (error) {
       throw error;
     } finally {
@@ -55,10 +84,13 @@ export function AuthContextProvider({
 
   async function loadUserData() {
     try {
-      const userLogged = await storageUserGet();
+      setIsLoading(true);
 
-      if (userLogged) {
-        setUser(userLogged);
+      const userLogged = await storageUserGet();
+      const token = await storageAuthTokenGet();
+
+      if (token && userLogged) {
+        userAndTokenUpdate(userLogged, token);
       }
     } catch (error) {
       throw error;
