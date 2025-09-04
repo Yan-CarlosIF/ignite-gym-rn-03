@@ -17,6 +17,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@services/api";
 import { AppError } from "@utils/AppError";
+import { useState } from "react";
+import { useAuth } from "@hooks/useAuth";
 
 const signUpFormSchema = z
   .object({
@@ -39,10 +41,12 @@ export function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpFormSchema),
   });
+  const { signIn } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const toast = useToast();
 
@@ -52,8 +56,11 @@ export function SignUp() {
 
   async function handleSignUp({ name, email, password }: SignUpFormData) {
     try {
+      setIsLoading(true);
+
       await api.post("/users", { name, email, password });
-      reset();
+
+      await signIn(email, password);
     } catch (error) {
       const isAppError = error instanceof AppError;
       const title = isAppError
@@ -153,6 +160,7 @@ export function SignUp() {
           />
 
           <Button
+            isLoading={isLoading}
             onPress={handleSubmit(handleSignUp)}
             title="Criar e acessar"
           />
