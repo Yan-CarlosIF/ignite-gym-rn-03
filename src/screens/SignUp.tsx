@@ -1,4 +1,12 @@
-import { Center, Heading, Image, Text, VStack, ScrollView } from "native-base";
+import {
+  Center,
+  Heading,
+  Image,
+  Text,
+  VStack,
+  ScrollView,
+  useToast,
+} from "native-base";
 import BackgroundImg from "@assets/background.png";
 import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
@@ -7,6 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "@services/api";
+import { AxiosError } from "axios";
 
 const signUpFormSchema = z
   .object({
@@ -29,16 +39,36 @@ export function SignUp() {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpFormSchema),
   });
+
+  const toast = useToast();
 
   const { goBack } = useNavigation();
 
   const handleGoToSignIn = () => goBack();
 
-  function handleSignUp(data: SignUpFormData) {
-    console.log(data);
+  async function handleSignUp({ name, email, password }: SignUpFormData) {
+    try {
+      await api.post("/users", { name, email, password });
+      reset();
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return toast.show({
+          title: error.response?.data?.message,
+          placement: "top",
+          bgColor: "red.500",
+        });
+      }
+      
+      toast.show({
+        title: "Não foi possível criar a conta",
+        placement: "top",
+        bgColor: "red.500",
+      });
+    }
   }
 
   return (
