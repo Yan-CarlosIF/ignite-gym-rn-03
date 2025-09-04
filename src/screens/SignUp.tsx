@@ -16,7 +16,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "@services/api";
-import { AxiosError } from "axios";
+import { AppError } from "@utils/AppError";
 
 const signUpFormSchema = z
   .object({
@@ -55,16 +55,13 @@ export function SignUp() {
       await api.post("/users", { name, email, password });
       reset();
     } catch (error) {
-      if (error instanceof AxiosError) {
-        return toast.show({
-          title: error.response?.data?.message,
-          placement: "top",
-          bgColor: "red.500",
-        });
-      }
-      
-      toast.show({
-        title: "Não foi possível criar a conta",
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível criar a conta. Tente novamente mais tarde.";
+
+      return toast.show({
+        title,
         placement: "top",
         bgColor: "red.500",
       });
