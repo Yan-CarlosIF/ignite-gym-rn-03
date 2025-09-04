@@ -1,4 +1,12 @@
-import { Center, Heading, Image, Text, VStack, ScrollView } from "native-base";
+import {
+  Center,
+  Heading,
+  Image,
+  Text,
+  VStack,
+  ScrollView,
+  useToast,
+} from "native-base";
 import BackgroundImg from "@assets/background.png";
 import LogoSvg from "@assets/logo.svg";
 import { Input } from "@components/Input";
@@ -8,6 +16,9 @@ import { AuthNavigatorRoutesProps } from "@routes/auth.routes";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@hooks/useAuth";
+import { AppError } from "@utils/AppError";
+import { useState } from "react";
 
 const signInFormSchema = z.object({
   email: z.string().email("Informe um e-mail"),
@@ -25,12 +36,32 @@ export function SignIn() {
     resolver: zodResolver(signInFormSchema),
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const { signIn } = useAuth();
+
   const { navigate } = useNavigation<AuthNavigatorRoutesProps>();
 
   const handleNewAccount = () => navigate("signUp");
 
   async function handleSignIn({ email, password }: SignInFormData) {
-    console.log(email, password);
+    try {
+      setIsLoading(true);
+      await signIn(email, password);
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível entrar. Tente novamente mais tarde.";
+
+      return toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -78,6 +109,7 @@ export function SignIn() {
             render={({ field: { onChange, value } }) => (
               <Input
                 placeholder="Senha"
+                autoCapitalize="none"
                 secureTextEntry
                 onChangeText={onChange}
                 value={value}
@@ -87,7 +119,11 @@ export function SignIn() {
               />
             )}
           />
-          <Button onPress={handleSubmit(handleSignIn)} title="Acessar" />
+          <Button
+            isLoading={isLoading}
+            onPress={handleSubmit(handleSignIn)}
+            title="Acessar"
+          />
         </Center>
 
         <Center mt={24}>
