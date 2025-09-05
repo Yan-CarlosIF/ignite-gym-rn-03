@@ -34,6 +34,10 @@ export function SignIn() {
     formState: { errors },
   } = useForm<SignInFormData>({
     resolver: zodResolver(signInFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   const [isLoading, setIsLoading] = useState(false);

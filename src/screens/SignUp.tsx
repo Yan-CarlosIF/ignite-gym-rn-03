@@ -43,6 +43,12 @@ export function SignUp() {
     formState: { errors },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      password_confirm: "",
+    },
   });
   const { signIn } = useAuth();
 
