@@ -19,6 +19,8 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@hooks/useAuth";
+import { api } from "@services/api";
+import { AppError } from "@utils/AppError";
 
 const PHOTO_SIZE = 33;
 
@@ -82,6 +84,8 @@ export function Profile() {
     },
   });
 
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState(
     "https://github.com/yan-carlosif.png"
@@ -131,9 +135,28 @@ export function Profile() {
 
   async function handleProfileUpdate(data: ProfileFormData) {
     try {
-      console.log(data);
+      setIsUpdating(true);
+
+      await api.put("/users", data);
+
+      toast.show({
+        title: "Perfil atualizado com sucesso!",
+        placement: "top",
+        bgColor: "green.500",
+      });
     } catch (error) {
-      throw error;
+      const isAppError = error instanceof AppError;
+      const title = isAppError
+        ? error.message
+        : "Não foi possível atualizar o perfil. Tente novamente mais tarde.";
+
+      return toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      });
+    } finally {
+      setIsUpdating(false);
     }
   }
 
@@ -243,6 +266,7 @@ export function Profile() {
           />
 
           <Button
+            isLoading={isUpdating}
             onPress={handleSubmit(handleProfileUpdate)}
             title="Atualizar"
             mt={4}
