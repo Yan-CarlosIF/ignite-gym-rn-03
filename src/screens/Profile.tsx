@@ -70,7 +70,7 @@ const profileFormSchema = z
 type ProfileFormData = z.infer<typeof profileFormSchema>;
 
 export function Profile() {
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const {
     control,
@@ -137,7 +137,17 @@ export function Profile() {
     try {
       setIsUpdating(true);
 
-      await api.put("/users", data);
+      await api.put("/users", {
+        name: data.name,
+        email: data.email,
+        password: data.new_password,
+        old_password: data.old_password,
+      });
+
+      await updateUserProfile({
+        ...user,
+        name: data.name,
+      });
 
       toast.show({
         title: "Perfil atualizado com sucesso!",
@@ -233,6 +243,7 @@ export function Profile() {
                 bg="gray.600"
                 secureTextEntry
                 errorMessage={errors.old_password?.message}
+                autoCapitalize="none"
               />
             )}
           />
@@ -247,6 +258,7 @@ export function Profile() {
                 bg="gray.600"
                 secureTextEntry
                 errorMessage={errors.new_password?.message}
+                autoCapitalize="none"
               />
             )}
           />
@@ -261,6 +273,7 @@ export function Profile() {
                 bg="gray.600"
                 secureTextEntry
                 errorMessage={errors.new_password_confirm?.message}
+                autoCapitalize="none"
               />
             )}
           />

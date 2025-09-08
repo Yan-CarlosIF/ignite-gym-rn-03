@@ -15,6 +15,7 @@ import { UserDTO } from "src/dto/UserDTO";
 type AuthContextType = {
   user: UserDTO;
   signIn: (email: string, password: string) => Promise<void>;
+  updateUserProfile: (userUpdated: UserDTO) => Promise<void>;
   signOut: () => Promise<void>;
   isLoading: boolean;
 };
@@ -82,6 +83,16 @@ export function AuthContextProvider({
     }
   }
 
+  async function updateUserProfile(userUpdated: UserDTO) {
+    try {
+      setUser(userUpdated);
+
+      await storageUserSave(userUpdated);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async function loadUserData() {
     try {
       setIsLoading(true);
@@ -104,7 +115,9 @@ export function AuthContextProvider({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, isLoading, signOut }}>
+    <AuthContext.Provider
+      value={{ user, signIn, isLoading, signOut, updateUserProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );
